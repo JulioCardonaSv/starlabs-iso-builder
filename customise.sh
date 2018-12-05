@@ -1,3 +1,4 @@
+function customiso() {
 
 #!/bin/bash
 echo "Enter the name of the ISO, for example: ubuntu-18.04.1-desktop-amd64.iso"
@@ -30,7 +31,7 @@ rm $iso
 sudo cp /etc/resolv.conf edit/etc/
 sudo mount --bind /dev/ edit/dev
 
-cat << EOF | sudo chroot chroot
+cat << EOF | sudo chroot edit
 
 mount -t proc none /proc
 mount -t sysfs none /sys
@@ -49,7 +50,7 @@ apt update
 apt upgrade -y
 apt dist-upgrade -y
 apt install intel-microcode -y
-apt install starlabs-custom -y
+apt install $1 -y
 apt autoremove -y
 
 sed -i 's#deb http://gb.archive.ubuntu.com/ubuntu/ bionic universe##g' /etc/apt/sources.list
@@ -99,4 +100,6 @@ find -type f -print0 | sudo xargs -0 md5sum | grep -v isolinux/boot.cat | sudo t
 sudo xorriso -as mkisofs -isohybrid-mbr isolinux/isohdpfx.bin -c isolinux/boot.cat -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e boot/grub/efi.img -volid "$volume" -no-emul-boot -isohybrid-gpt-basdat -o ../../$distro-sls.iso .
 
 sudo fdisk -lu ../../$distro-sls.iso
+
+}
 
